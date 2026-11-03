@@ -1,25 +1,22 @@
-import { useEffect, useState } from 'react'
-import { account } from './lib/appwrite'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import AppRoutes from './routes/AppRoutes'
+import { selectTheme, STORAGE_KEY } from './features/theme/themeSlice'
 
 function App() {
-  const [status, setStatus] = useState('Checking Appwrite connection...')
+  const theme = useSelector(selectTheme)
 
+  // Keep the <html> class and localStorage in sync with the Redux theme.
   useEffect(() => {
-    account
-      .get()
-      .then(() => setStatus('Connected (a session already exists)'))
-      .catch((err) => {
-        // A 401 means Appwrite answered and we're simply not logged in.
-        if (err.code === 401) setStatus('Connected to Appwrite (guest, 401 is expected)')
-        else setStatus(`Connection problem: ${err.message}`)
-      })
-  }, [])
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    try {
+      localStorage.setItem(STORAGE_KEY, theme)
+    } catch {
+      // Ignore storage errors (e.g. private browsing).
+    }
+  }, [theme])
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900">
-      <h1 className="text-xl font-bold text-sky-400">{status}</h1>
-    </div>
-  )
+  return <AppRoutes />
 }
 
 export default App

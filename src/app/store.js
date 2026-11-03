@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
+import themeReducer from '../features/theme/themeSlice'
 
-// Placeholder reducer so the store is valid.
-// Replaced by real slices (auth, theme, etc.) in later phases.
+
 export const store = configureStore({
   reducer: {
-    app: (state = {}) => state,
+    theme: themeReducer,
   },
 })
