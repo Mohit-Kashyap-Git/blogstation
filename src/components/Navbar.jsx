@@ -1,9 +1,17 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link, NavLink } from 'react-router'
 import { APP_NAME } from '../utils/constants'
+import {
+  selectIsAuthenticated,
+  selectIsInitializing,
+  selectUser,
+} from '../features/auth/authSlice'
+import { useLogout } from '../hooks/useLogout'
 import Button from './ui/Button'
 import Container from './ui/Container'
 import ThemeToggle from './ThemeToggle'
+import UserMenu from './UserMenu'
 
 const navLinks = [
   { to: '/', label: 'Home', end: true },
@@ -19,7 +27,17 @@ const linkClass = ({ isActive }) =>
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const user = useSelector(selectUser)
+  const isAuthenticated = useSelector(selectIsAuthenticated)
+  const isInitializing = useSelector(selectIsInitializing)
+  const logout = useLogout()
+
   const closeMenu = () => setMenuOpen(false)
+
+  function handleMobileLogout() {
+    closeMenu()
+    logout()
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
@@ -39,9 +57,18 @@ function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+
+          {/* Show nothing until the session check finishes, so guests-only buttons don't flash for logged-in users. */}
           <div className="hidden items-center gap-2 md:flex">
-            <Button to="/login" variant="ghost" size="sm">Log in</Button>
-            <Button to="/register" size="sm">Sign up</Button>
+            {!isInitializing &&
+              (isAuthenticated ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Button to="/login" variant="ghost" size="sm">Log in</Button>
+                  <Button to="/register" size="sm">Sign up</Button>
+                </>
+              ))}
           </div>
 
           {/* Mobile menu button */}
@@ -69,10 +96,25 @@ function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <div className="mt-2 flex gap-2">
-              <Button to="/login" variant="secondary" onClick={closeMenu} className="flex-1">Log in</Button>
-              <Button to="/register" onClick={closeMenu} className="flex-1">Sign up</Button>
-            </div>
+
+            {!isInitializing &&
+              (isAuthenticated ? (
+                <div className="mt-2 border-t border-slate-200 pt-3 dark:border-slate-800">
+                  <p className="truncate px-3 text-sm font-semibold">{user.name}</p>
+                  <p className="mb-1 truncate px-3 text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                  <NavLink to="/dashboard" onClick={closeMenu} className={linkClass}>
+                    Dashboard
+                  </NavLink>
+                  <Button variant="secondary" onClick={handleMobileLogout} className="mt-2 w-full">
+                    Log out
+                  </Button>
+                </div>
+              ) : (
+                <div className="mt-2 flex gap-2">
+                  <Button to="/login" variant="secondary" onClick={closeMenu} className="flex-1">Log in</Button>
+                  <Button to="/register" onClick={closeMenu} className="flex-1">Sign up</Button>
+                </div>
+              ))}
           </Container>
         </nav>
       )}
