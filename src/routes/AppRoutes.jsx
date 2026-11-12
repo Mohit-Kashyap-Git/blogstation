@@ -10,6 +10,9 @@ import Dashboard from '../pages/Dashboard'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import NotFound from '../pages/NotFound'
+import CreatePost from '../pages/CreatePost'
+import EditPost from '../pages/EditPost'
+import Profile from '../pages/Profile'
 
 function AppRoutes() {
   return (
@@ -21,6 +24,9 @@ function AppRoutes() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="posts/new" element={<CreatePost />} />
+          <Route path="posts/:postId/edit" element={<EditPost />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

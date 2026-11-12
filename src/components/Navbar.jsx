@@ -19,10 +19,9 @@ const navLinks = [
 ]
 
 const linkClass = ({ isActive }) =>
-  `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-    isActive
-      ? 'text-indigo-600 dark:text-indigo-400'
-      : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
+  `rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+    ? 'text-indigo-600 dark:text-indigo-400'
+    : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
   }`
 
 function Navbar() {
@@ -102,8 +101,11 @@ function Navbar() {
                 <div className="mt-2 border-t border-slate-200 pt-3 dark:border-slate-800">
                   <p className="truncate px-3 text-sm font-semibold">{user.name}</p>
                   <p className="mb-1 truncate px-3 text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                  <NavLink to="/profile" onClick={closeMenu} className={linkClass}>
+                    Profile
+                  </NavLink>
                   <NavLink to="/dashboard" onClick={closeMenu} className={linkClass}>
-                    Dashboard
+                    My blogs
                   </NavLink>
                   <Button variant="secondary" onClick={handleMobileLogout} className="mt-2 w-full">
                     Log out

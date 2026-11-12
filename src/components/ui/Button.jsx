@@ -9,7 +9,9 @@ const variants = {
     'border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800',
   ghost:
     'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800',
-    light: 'bg-white text-indigo-700 hover:bg-indigo-100', 
+  light: 'bg-white text-indigo-700 hover:bg-indigo-50',
+  danger: 'bg-red-600 text-white hover:bg-red-700',
+  dangerGhost: 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10',
 }
 
 const sizes = {

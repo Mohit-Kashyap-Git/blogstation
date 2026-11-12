@@ -17,6 +17,7 @@ export const initializeAuth = createAuthThunk('auth/initialize', authService.get
 export const loginUser = createAuthThunk('auth/login', authService.login)
 export const registerUser = createAuthThunk('auth/register', authService.register)
 export const logoutUser = createAuthThunk('auth/logout', authService.logout)
+export const updateProfileName = createAuthThunk('auth/updateName', authService.updateName)
 
 const initialState = {
   user: null,
@@ -50,23 +51,26 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.error = action.payload
       })
+      .addCase(updateProfileName.fulfilled, (state, action) => {
+        state.user = action.payload
+      })
 
-    // Login and register behave the same way.
-    ;[loginUser, registerUser].forEach((thunk) => {
-      builder
-        .addCase(thunk.pending, (state) => {
-          state.isSubmitting = true
-          state.error = null
-        })
-        .addCase(thunk.fulfilled, (state, action) => {
-          state.isSubmitting = false
-          state.user = action.payload
-        })
-        .addCase(thunk.rejected, (state, action) => {
-          state.isSubmitting = false
-          state.error = action.payload
-        })
-    })
+      // Login and register behave the same way.
+      ;[loginUser, registerUser].forEach((thunk) => {
+        builder
+          .addCase(thunk.pending, (state) => {
+            state.isSubmitting = true
+            state.error = null
+          })
+          .addCase(thunk.fulfilled, (state, action) => {
+            state.isSubmitting = false
+            state.user = action.payload
+          })
+          .addCase(thunk.rejected, (state, action) => {
+            state.isSubmitting = false
+            state.error = action.payload
+          })
+      })
   },
 })
 

@@ -7,6 +7,7 @@ function toUser(appwriteUser) {
     id: appwriteUser.$id,
     name: appwriteUser.name,
     email: appwriteUser.email,
+    joinedAt: appwriteUser.$createdAt,
   }
 }
 
@@ -39,4 +40,13 @@ export async function getCurrentUser() {
     if (error.code === 401) return null
     throw error
   }
+}
+
+export async function updateName(name) {
+  return toUser(await account.updateName({ name }))
+}
+
+// Appwrite checks the current password server-side and applies your password policy.
+export async function changePassword({ currentPassword, newPassword }) {
+  await account.updatePassword({ password: newPassword, oldPassword: currentPassword })
 }

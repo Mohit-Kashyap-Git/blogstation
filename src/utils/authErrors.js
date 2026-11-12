@@ -18,3 +18,9 @@ export function getAuthErrorMessage(error) {
       return 'Something went wrong. Check your connection and try again.'
   }
 }
+
+// A 401 here means the *current* password was wrong, not a failed login.
+export function getPasswordChangeErrorMessage(error) {
+  if (error?.code === 401) return 'Your current password is incorrect.'
+  return getAuthErrorMessage(error)
+}

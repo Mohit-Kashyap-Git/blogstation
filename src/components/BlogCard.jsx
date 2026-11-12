@@ -5,7 +5,7 @@ import { getGradient } from '../utils/getGradient'
 
 
 function BlogCard({ post }) {
-  const { id, slug, title, excerpt, category, author, date, readTime, coverImage } = post
+  const { id, slug, title, excerpt, category, author, date, coverImage } = post
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-shadow hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
@@ -16,7 +16,7 @@ function BlogCard({ post }) {
       )}
 
       <div className="flex flex-1 flex-col p-5">
-        <Badge className="self-start">{category}</Badge>
+        {category && <Badge className="self-start">{category}</Badge>}
 
         <h3 className="mt-3 text-lg font-semibold leading-snug">
           {/* The ::after stretches the link over the whole card, so the entire card is clickable. */}
@@ -40,7 +40,7 @@ function BlogCard({ post }) {
           <div className="min-w-0">
             <p className="truncate font-medium text-slate-700 dark:text-slate-200">{author}</p>
             <p>
-              <time dateTime={date}>{formatDate(date)}</time> · {readTime} min read
+              <time dateTime={date}>{formatDate(date)}</time>
             </p>
           </div>
         </div>

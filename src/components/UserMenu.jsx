@@ -61,8 +61,11 @@ function UserMenu() {
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
           </div>
           <div className="mt-2 space-y-1">
+            <Link to="/profile" onClick={() => setOpen(false)} className={itemClass}>
+              Profile
+            </Link>
             <Link to="/dashboard" onClick={() => setOpen(false)} className={itemClass}>
-              Dashboard
+              My blogs
             </Link>
             <button type="button" onClick={logout} className={itemClass}>
               Log out
