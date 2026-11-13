@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import { emailRules } from '../utils/validation'
 import {
   clearAuthError,
   loginUser,
@@ -43,11 +44,7 @@ function Login() {
           type="email"
           autoComplete="email"
           error={errors.email?.message}
-          {...register('email', {
-            required: 'Email is required',
-            setValueAs: (value) => value.trim(),
-            pattern: { value: /^\S+@\S+\.\S+$/, message: 'Enter a valid email address' },
-          })}
+          {...register('email', emailRules)}
         />
 
         <Input

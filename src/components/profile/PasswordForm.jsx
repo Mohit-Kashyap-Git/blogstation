@@ -5,6 +5,7 @@ import Button from '../ui/Button'
 import Input from '../ui/Input'
 import { changePassword } from '../../services/authService'
 import { getPasswordChangeErrorMessage } from '../../utils/authErrors'
+import { confirmPasswordRules, newPasswordRules } from '../../utils/validation'
 
 const emptyValues = { currentPassword: '', newPassword: '', confirmPassword: '' }
 
@@ -49,9 +50,8 @@ function PasswordForm() {
         autoComplete="new-password"
         error={errors.newPassword?.message}
         {...register('newPassword', {
+          ...newPasswordRules,
           required: 'Enter a new password',
-          minLength: { value: 8, message: 'Password must be at least 8 characters' },
-          maxLength: { value: 256, message: 'Password is too long' },
           validate: (value) =>
             value !== getValues('currentPassword') || 'New password must be different from the current one',
         })}
@@ -63,8 +63,8 @@ function PasswordForm() {
         autoComplete="new-password"
         error={errors.confirmPassword?.message}
         {...register('confirmPassword', {
+          ...confirmPasswordRules(() => getValues('newPassword')),
           required: 'Please confirm your new password',
-          validate: (value) => value === getValues('newPassword') || 'Passwords do not match',
         })}
       />
 

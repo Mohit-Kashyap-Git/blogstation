@@ -6,6 +6,7 @@ import Button from '../ui/Button'
 import Input from '../ui/Input'
 import { selectUser, updateProfileName } from '../../features/auth/authSlice'
 import { updateAuthorName } from '../../services/postService'
+import { nameRules } from '../../utils/validation'
 
 function NameForm() {
   const dispatch = useDispatch()
@@ -50,12 +51,7 @@ function NameForm() {
         type="text"
         autoComplete="name"
         error={errors.name?.message}
-        {...register('name', {
-          setValueAs: (value) => value.trim(),
-          required: 'Name is required',
-          minLength: { value: 2, message: 'Name must be at least 2 characters' },
-          maxLength: { value: 50, message: 'Name must be 50 characters or fewer' },
-        })}
+        {...register('name', nameRules)}
       />
 
       <Button type="submit" disabled={isSubmitting || !isDirty}>

@@ -6,6 +6,7 @@ import Select from './ui/Select'
 import Textarea from './ui/Textarea'
 import { useRef, useState } from 'react'
 import CoverImageField from './CoverImageField'
+import { maxLengthRule, postLimits } from '../utils/validation'
 
 const emptyValues = { title: '', categorySlug: '', excerpt: '', content: '' }
 
@@ -48,7 +49,7 @@ function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, cu
         {...register('title', {
           setValueAs: (value) => value.trim(),
           required: 'Title is required',
-          maxLength: { value: 150, message: 'Title must be 150 characters or fewer' },
+          maxLength: maxLengthRule(postLimits.title, 'Title'),
         })}
       />
 
@@ -74,7 +75,7 @@ function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, cu
         error={errors.excerpt?.message}
         {...register('excerpt', {
           setValueAs: (value) => value.trim(),
-          maxLength: { value: 300, message: 'Excerpt must be 300 characters or fewer' },
+          maxLength: maxLengthRule(postLimits.excerpt, 'Excerpt'),
           validate: requiredToPublish('Write an excerpt to publish'),
         })}
       />
@@ -86,7 +87,7 @@ function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, cu
         error={errors.content?.message}
         {...register('content', {
           setValueAs: (value) => value.trim(),
-          maxLength: { value: 50000, message: 'Content is too long' },
+          maxLength: maxLengthRule(postLimits.content, 'Content'),
           validate: requiredToPublish('Write some content to publish'),
         })}
       />

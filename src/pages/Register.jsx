@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import { confirmPasswordRules, emailRules, nameRules, newPasswordRules } from '../utils/validation'
 import {
   clearAuthError,
   registerUser,
@@ -47,12 +48,7 @@ function Register() {
           type="text"
           autoComplete="name"
           error={errors.name?.message}
-          {...register('name', {
-            required: 'Name is required',
-            setValueAs: (value) => value.trim(),
-            minLength: { value: 2, message: 'Name must be at least 2 characters' },
-            maxLength: { value: 50, message: 'Name must be 50 characters or fewer' },
-          })}
+          {...register('name', nameRules)}
         />
 
         <Input
@@ -60,11 +56,7 @@ function Register() {
           type="email"
           autoComplete="email"
           error={errors.email?.message}
-          {...register('email', {
-            required: 'Email is required',
-            setValueAs: (value) => value.trim(),
-            pattern: { value: /^\S+@\S+\.\S+$/, message: 'Enter a valid email address' },
-          })}
+          {...register('email', emailRules)}
         />
 
         <Input
@@ -72,11 +64,7 @@ function Register() {
           type="password"
           autoComplete="new-password"
           error={errors.password?.message}
-          {...register('password', {
-            required: 'Password is required',
-            minLength: { value: 8, message: 'Password must be at least 8 characters' },
-            maxLength: { value: 256, message: 'Password is too long' },
-          })}
+          {...register('password', newPasswordRules)}
         />
 
         <Input
@@ -84,10 +72,7 @@ function Register() {
           type="password"
           autoComplete="new-password"
           error={errors.confirmPassword?.message}
-          {...register('confirmPassword', {
-            required: 'Please confirm your password',
-            validate: (value) => value === getValues('password') || 'Passwords do not match',
-          })}
+          {...register('confirmPassword', confirmPasswordRules(() => getValues('password')))}
         />
 
         <Button type="submit" disabled={isSubmitting} className="w-full">
