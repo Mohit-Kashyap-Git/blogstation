@@ -9,10 +9,13 @@ import { selectUser } from '../features/auth/authSlice'
 import { useCategories } from '../hooks/useCategories'
 import { createPost } from '../services/postService'
 import { getPostErrorMessage } from '../utils/postErrors'
+import { useToast } from '../hooks/useToast'
+import { getSaveMessage } from '../utils/postRules'
 
 function CreatePost() {
   const user = useSelector(selectUser)
   const navigate = useNavigate()
+  const toast = useToast()
   const { categories, isLoading, error: categoriesError } = useCategories()
   const [submitError, setSubmitError] = useState(null)
 
@@ -20,6 +23,7 @@ function CreatePost() {
     setSubmitError(null)
     try {
       await createPost({ values, status, user, coverFile: cover.file })
+      toast.success(getSaveMessage(null, status))
       navigate('/dashboard')
     } catch (error) {
       console.error(error)

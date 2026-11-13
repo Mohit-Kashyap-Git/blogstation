@@ -3,6 +3,8 @@ import * as authService from '../../services/authService'
 import { getAuthErrorMessage } from '../../utils/authErrors'
 
 // Wraps a service call so every thunk handles errors the same way.
+// On failure, the thunk rejects with a user-friendly message string,
+// which callers can read with `await dispatch(thunk()).unwrap()`.
 function createAuthThunk(type, serviceFn) {
   return createAsyncThunk(type, async (arg, { rejectWithValue }) => {
     try {
@@ -22,18 +24,12 @@ export const updateProfileName = createAuthThunk('auth/updateName', authService.
 const initialState = {
   user: null,
   isInitializing: true, // true until the first session check finishes
-  isSubmitting: false, // true while login/register is in flight
-  error: null,
 }
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {
-    clearAuthError(state) {
-      state.error = null
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(initializeAuth.fulfilled, (state, action) => {
@@ -45,41 +41,23 @@ const authSlice = createSlice({
         state.user = null
         state.isInitializing = false
       })
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.user = action.payload
       })
-      .addCase(logoutUser.rejected, (state, action) => {
-        state.error = action.payload
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.user = action.payload
       })
       .addCase(updateProfileName.fulfilled, (state, action) => {
         state.user = action.payload
       })
-
-      // Login and register behave the same way.
-      ;[loginUser, registerUser].forEach((thunk) => {
-        builder
-          .addCase(thunk.pending, (state) => {
-            state.isSubmitting = true
-            state.error = null
-          })
-          .addCase(thunk.fulfilled, (state, action) => {
-            state.isSubmitting = false
-            state.user = action.payload
-          })
-          .addCase(thunk.rejected, (state, action) => {
-            state.isSubmitting = false
-            state.error = action.payload
-          })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null
       })
   },
 })
 
-export const { clearAuthError } = authSlice.actions
-
 export const selectUser = (state) => state.auth.user
 export const selectIsAuthenticated = (state) => state.auth.user !== null
 export const selectIsInitializing = (state) => state.auth.isInitializing
-export const selectIsSubmitting = (state) => state.auth.isSubmitting
-export const selectAuthError = (state) => state.auth.error
 
 export default authSlice.reducer

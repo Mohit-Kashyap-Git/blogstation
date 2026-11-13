@@ -1,38 +1,33 @@
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import { registerUser } from '../features/auth/authSlice'
 import { confirmPasswordRules, emailRules, nameRules, newPasswordRules } from '../utils/validation'
-import {
-  clearAuthError,
-  registerUser,
-  selectAuthError,
-  selectIsSubmitting,
-} from '../features/auth/authSlice'
 
 function Register() {
   const dispatch = useDispatch()
-  const isSubmitting = useSelector(selectIsSubmitting)
-  const authError = useSelector(selectAuthError)
 
   const {
     register,
     handleSubmit,
     getValues,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
     mode: 'onTouched',
   })
 
-  useEffect(() => () => dispatch(clearAuthError()), [dispatch])
-
-  function onSubmit({ name, email, password }) {
+  async function onSubmit({ name, email, password }) {
     // confirmPassword is only for the form. It is never sent to Appwrite.
-    dispatch(registerUser({ name, email, password }))
+    try {
+      await dispatch(registerUser({ name, email, password })).unwrap()
+    } catch (message) {
+      setError('root.serverError', { message })
+    }
   }
 
   return (
@@ -41,7 +36,7 @@ function Register() {
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Start writing and sharing your stories.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6 space-y-4">
-        {authError && <Alert>{authError}</Alert>}
+        {errors.root?.serverError && <Alert>{errors.root.serverError.message}</Alert>}
 
         <Input
           label="Name"

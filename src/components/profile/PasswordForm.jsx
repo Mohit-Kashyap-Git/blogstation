@@ -1,40 +1,42 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Alert from '../ui/Alert'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import { changePassword } from '../../services/authService'
+import { useToast } from '../../hooks/useToast'
 import { getPasswordChangeErrorMessage } from '../../utils/authErrors'
 import { confirmPasswordRules, newPasswordRules } from '../../utils/validation'
 
 const emptyValues = { currentPassword: '', newPassword: '', confirmPassword: '' }
 
 function PasswordForm() {
-  const [message, setMessage] = useState(null) // { tone, text }
+  const toast = useToast()
 
   const {
     register,
     handleSubmit,
     reset,
     getValues,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: emptyValues, mode: 'onTouched' })
 
   async function onSubmit({ currentPassword, newPassword }) {
-    setMessage(null)
     try {
       await changePassword({ currentPassword, newPassword })
-      reset(emptyValues) // never leave passwords sitting in the form
-      setMessage({ tone: 'success', text: 'Your password has been changed.' })
     } catch (error) {
       console.error(error)
-      setMessage({ tone: 'error', text: getPasswordChangeErrorMessage(error) })
+      setError('root.serverError', { message: getPasswordChangeErrorMessage(error) })
+      return
     }
+
+    reset(emptyValues) // never leave passwords sitting in the form
+    toast.success('Your password has been changed.')
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-      {message && <Alert tone={message.tone}>{message.text}</Alert>}
+      {errors.root?.serverError && <Alert>{errors.root.serverError.message}</Alert>}
 
       <Input
         label="Current password"

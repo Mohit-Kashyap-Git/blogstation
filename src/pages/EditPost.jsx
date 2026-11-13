@@ -12,11 +12,14 @@ import { useCategories } from '../hooks/useCategories'
 import { getPostById, updatePost } from '../services/postService'
 import { getPostErrorMessage } from '../utils/postErrors'
 import { getCoverUrl } from '../services/storageService'
+import { useToast } from '../hooks/useToast'
+import { getSaveMessage } from '../utils/postRules'
 
 function EditPost() {
   const { postId } = useParams()
   const user = useSelector(selectUser)
   const navigate = useNavigate()
+  const toast = useToast()
   const { categories, isLoading: categoriesLoading } = useCategories()
 
   const [state, setState] = useState({ post: null, isLoading: true, notFound: false, error: null })
@@ -60,6 +63,7 @@ function EditPost() {
         coverFile: cover.file,
         removeCover: cover.remove,
       })
+      toast.success(getSaveMessage(state.post.status, status))
       navigate('/dashboard')
     } catch (err) {
       console.error(err)

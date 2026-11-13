@@ -3,6 +3,7 @@ import AppRoutes from './routes/AppRoutes'
 import { selectTheme, STORAGE_KEY } from './features/theme/themeSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeAuth } from './features/auth/authSlice'
+import ToastViewport from './components/ToastViewport'
 
 function App() {
   const theme = useSelector(selectTheme)
@@ -23,7 +24,10 @@ function App() {
     }
   }, [theme])
 
-  return <AppRoutes />
+  return (<>
+    <AppRoutes />
+    <ToastViewport />
+  </>)
 }
 
 export default App

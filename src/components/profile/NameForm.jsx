@@ -1,50 +1,49 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Alert from '../ui/Alert'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import { selectUser, updateProfileName } from '../../features/auth/authSlice'
+import { useToast } from '../../hooks/useToast'
 import { updateAuthorName } from '../../services/postService'
 import { nameRules } from '../../utils/validation'
 
 function NameForm() {
   const dispatch = useDispatch()
   const user = useSelector(selectUser)
-  const [message, setMessage] = useState(null) // { tone, text }
+  const toast = useToast()
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isSubmitting, isDirty },
   } = useForm({ defaultValues: { name: user.name }, mode: 'onTouched' })
 
   async function onSubmit({ name }) {
-    setMessage(null)
-
-    const result = await dispatch(updateProfileName(name))
-    if (!updateProfileName.fulfilled.match(result)) {
-      setMessage({ tone: 'error', text: result.payload })
+    try {
+      await dispatch(updateProfileName(name)).unwrap()
+    } catch (message) {
+      setError('root.serverError', { message })
       return
     }
 
     reset({ name }) // the saved value becomes the new baseline
     try {
       await updateAuthorName(user.id, name)
-      setMessage({ tone: 'success', text: 'Your name has been updated.' })
+      toast.success('Your name has been updated.')
     } catch (error) {
       console.error(error)
-      setMessage({
-        tone: 'info',
-        text: 'Your name was updated, but some of your posts still show the old name. Changing your name again will update them.',
-      })
+      toast.info(
+        'Your name was updated, but some of your posts still show the old name. Changing your name again will update them.'
+      )
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-      {message && <Alert tone={message.tone}>{message.text}</Alert>}
+      {errors.root?.serverError && <Alert>{errors.root.serverError.message}</Alert>}
 
       <Input
         label="Name"

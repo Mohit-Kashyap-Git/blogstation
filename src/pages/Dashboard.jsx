@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import MyPostItem from '../components/MyPostItem'
-import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
 import Container from '../components/ui/Container'
@@ -12,28 +11,29 @@ import { useCategories } from '../hooks/useCategories'
 import { useMyPosts } from '../hooks/useMyPosts'
 import { deletePost, setPostStatus } from '../services/postService'
 import { getPostErrorMessage } from '../utils/postErrors'
+import { useToast } from '../hooks/useToast'
+import { getSaveMessage } from '../utils/postRules'
 
 function Dashboard() {
   const user = useSelector(selectUser)
   const { posts, setPosts, isLoading, error, reload } = useMyPosts(user.id)
   const { categories } = useCategories()
-
+  const toast = useToast()
   const [busyId, setBusyId] = useState(null) // the post currently being changed
-  const [actionError, setActionError] = useState(null)
   const [postToDelete, setPostToDelete] = useState(null)
 
   const categoryNames = Object.fromEntries(categories.map((c) => [c.slug, c.name]))
 
   async function handleToggleStatus(post) {
     setBusyId(post.$id)
-    setActionError(null)
     try {
       const status = post.status === 'published' ? 'draft' : 'published'
       const updated = await setPostStatus({ post, status, userId: user.id })
       setPosts((list) => list.map((item) => (item.$id === updated.$id ? updated : item)))
+      toast.success(getSaveMessage(post.status, status))
     } catch (err) {
       console.error(err)
-      setActionError(getPostErrorMessage(err))
+      toast.error(getPostErrorMessage(err))
     } finally {
       setBusyId(null)
     }
@@ -42,13 +42,13 @@ function Dashboard() {
   async function handleConfirmDelete() {
     const post = postToDelete
     setBusyId(post.$id)
-    setActionError(null)
     try {
       await deletePost(post)
       setPosts((list) => list.filter((item) => item.$id !== post.$id))
+      toast.success('Post deleted.')
     } catch (err) {
       console.error(err)
-      setActionError(getPostErrorMessage(err))
+      toast.error(getPostErrorMessage(err))
     } finally {
       setBusyId(null)
       setPostToDelete(null)
@@ -66,11 +66,6 @@ function Dashboard() {
       </div>
 
       <div className="mt-8">
-        {actionError && (
-          <div className="mb-4">
-            <Alert>{actionError}</Alert>
-          </div>
-        )}
 
         {isLoading ? (
           <PageLoader />

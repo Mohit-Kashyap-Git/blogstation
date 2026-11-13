@@ -1,34 +1,31 @@
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import { loginUser } from '../features/auth/authSlice'
 import { emailRules } from '../utils/validation'
-import {
-  clearAuthError,
-  loginUser,
-  selectAuthError,
-  selectIsSubmitting,
-} from '../features/auth/authSlice'
 
 function Login() {
   const dispatch = useDispatch()
-  const isSubmitting = useSelector(selectIsSubmitting)
-  const authError = useSelector(selectAuthError)
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm({ defaultValues: { email: '', password: '' }, mode: 'onTouched' })
 
-  // Don't carry an old server error over to another page.
-  useEffect(() => () => dispatch(clearAuthError()), [dispatch])
-
-  function onSubmit(values) {
-    dispatch(loginUser(values))
+  // handleSubmit keeps isSubmitting true until this promise settles.
+  async function onSubmit(values) {
+    try {
+      // On success the user lands in Redux and GuestRoute redirects away.
+      await dispatch(loginUser(values)).unwrap()
+    } catch (message) {
+      // unwrap() throws the friendly message our thunk rejected with.
+      setError('root.serverError', { message })
+    }
   }
 
   return (
@@ -37,7 +34,7 @@ function Login() {
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Welcome back. Enter your details to continue.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6 space-y-4">
-        {authError && <Alert>{authError}</Alert>}
+        {errors.root?.serverError && <Alert>{errors.root.serverError.message}</Alert>}
 
         <Input
           label="Email"

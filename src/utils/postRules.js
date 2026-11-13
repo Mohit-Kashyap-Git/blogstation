@@ -6,3 +6,11 @@ export function getMissingForPublish(post) {
   if (!post.content?.trim()) missing.push('content')
   return missing
 }
+
+// previousStatus is null when the post is brand new.
+export function getSaveMessage(previousStatus, status) {
+  if (status === 'published') {
+    return previousStatus === 'published' ? 'Changes saved.' : 'Post published.'
+  }
+  return previousStatus === 'published' ? 'Post moved to drafts.' : 'Draft saved.'
+}
