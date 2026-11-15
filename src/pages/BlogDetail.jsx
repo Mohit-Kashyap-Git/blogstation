@@ -10,20 +10,29 @@ import { formatDate } from '../utils/formatDate'
 import { getGradient } from '../utils/getGradient'
 import { estimateReadTime } from '../utils/readTime'
 import { getCoverUrl } from '../services/storageService'
+import ErrorState from '../components/ui/ErrorState'
 
 function BlogDetail() {
   const { slug } = useParams()
-  const { post, isLoading, error } = usePublishedPost(slug)
+  const { post, isLoading, error, retry } = usePublishedPost(slug)
   const { categories } = useCategories()
 
   if (isLoading) return <PageLoader />
 
-  if (error || !post) {
+  if (error) {
+    return (
+      <Container className="py-16">
+        <ErrorState title="Couldn't load this post" message={error} onRetry={retry} />
+      </Container>
+    )
+  }
+
+  if (!post) {
     return (
       <Container className="py-16">
         <EmptyState
-          title={error ? "Couldn't load this post" : 'Post not found'}
-          description={error ?? 'This post may have been removed or the link is incorrect.'}
+          title="Post not found"
+          description="This post may have been removed or the link is incorrect."
           action={<Button to="/blogs">Browse all blogs</Button>}
         />
       </Container>

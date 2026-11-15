@@ -45,7 +45,7 @@ function CreatePost() {
           <>
             {categoriesError && (
               <div className="mb-5">
-                <Alert>{categoriesError} You can still save a draft.</Alert>
+                <Alert>Could not load categories. You can still save a draft.</Alert>
               </div>
             )}
             <PostForm categories={categories} onSubmit={handleSubmit} error={submitError} />

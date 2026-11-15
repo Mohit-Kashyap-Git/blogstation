@@ -1,29 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { getMyPostCounts } from '../services/postService'
+import { useAsync } from './useAsync'
 
 export function useMyPostCounts(userId) {
-  const [result, setResult] = useState({ userId: null, counts: null, error: false })
+  const fetchCounts = useCallback(() => getMyPostCounts(userId), [userId])
+  const { data, isLoading, error } = useAsync(fetchCounts)
 
-  useEffect(() => {
-    let ignore = false
-
-    getMyPostCounts(userId)
-      .then((counts) => {
-        if (!ignore) setResult({ userId, counts, error: false })
-      })
-      .catch((err) => {
-        console.error(err)
-        if (!ignore) setResult({ userId, counts: null, error: true })
-      })
-
-    return () => {
-      ignore = true
-    }
-  }, [userId])
-
-  return {
-    counts: result.userId === userId ? result.counts : null,
-    isLoading: result.userId !== userId,
-    error: result.userId === userId && result.error,
-  }
+  return { counts: isLoading ? null : data, isLoading, error }
 }

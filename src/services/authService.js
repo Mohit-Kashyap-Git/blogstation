@@ -50,3 +50,14 @@ export async function updateName(name) {
 export async function changePassword({ currentPassword, newPassword }) {
   await account.updatePassword({ password: newPassword, oldPassword: currentPassword })
 }
+
+// True unless Appwrite explicitly says there is no session (401).
+// A network error doesn't prove the session ended, so it counts as "still active".
+export async function isSessionActive() {
+  try {
+    await account.get()
+    return true
+  } catch (error) {
+    return error.code !== 401
+  }
+}

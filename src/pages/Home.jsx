@@ -10,6 +10,7 @@ import SectionHeading from '../components/ui/SectionHeading'
 import { useCategories } from '../hooks/useCategories'
 import { usePublishedPosts } from '../hooks/usePublishedPosts'
 import { toCardData } from '../utils/postMapper'
+import ErrorState from '../components/ui/ErrorState'
 
 function Home() {
   const { categories } = useCategories()
@@ -21,13 +22,7 @@ function Home() {
     if (isLoading) return <PageLoader />
 
     if (error) {
-      return (
-        <EmptyState
-          title="Couldn't load posts"
-          description={error}
-          action={<Button variant="secondary" onClick={retry}>Try again</Button>}
-        />
-      )
+      return <ErrorState title="Couldn't load posts" message={error} onRetry={retry} />
     }
 
     if (posts.length === 0) {

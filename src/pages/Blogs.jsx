@@ -9,6 +9,7 @@ import { useCategories } from '../hooks/useCategories'
 import { usePublishedPosts } from '../hooks/usePublishedPosts'
 import { POSTS_PER_PAGE } from '../utils/constants'
 import { toCardData } from '../utils/postMapper'
+import ErrorState from '../components/ui/ErrorState'
 
 const chipBase =
   'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-indigo-500'
@@ -61,13 +62,7 @@ function Blogs() {
     if (isLoading && posts.length === 0) return <PageLoader />
 
     if (error) {
-      return (
-        <EmptyState
-          title="Couldn't load posts"
-          description={error}
-          action={<Button variant="secondary" onClick={retry}>Try again</Button>}
-        />
-      )
+      return <ErrorState title="Couldn't load posts" message={error} onRetry={retry} />
     }
 
     if (posts.length === 0) {

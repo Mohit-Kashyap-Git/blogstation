@@ -2,6 +2,7 @@ import { ID, Permission, Query, Role } from 'appwrite'
 import { appwriteConfig, tablesDB } from '../lib/appwrite'
 import { generateSlug } from '../utils/slug'
 import { deleteCover, uploadCover } from './storageService'
+import { isSessionActive } from './authService'
 
 const { databaseId, postsTableId: tableId } = appwriteConfig
 
@@ -69,8 +70,20 @@ export async function getMyPosts(userId) {
   return response.rows
 }
 
-export function getPostById(postId) {
-  return tablesDB.getRow({ databaseId, tableId, rowId: postId })
+// Returns the post if it exists and belongs to userId, otherwise null.
+export async function getOwnPost(postId, userId) {
+  try {
+    const post = await tablesDB.getRow({ databaseId, tableId, rowId: postId })
+    // Published posts are readable by everyone, so we check ownership here too.
+    // (Appwrite still blocks the actual update for non-owners.)
+    return post.authorId === userId ? post : null
+  } catch (error) {
+    if (error.code === 404) return null
+    // Someone else's draft returns 401. But 401 can also mean our session ended,
+    // so only treat it as "not found" if we are still logged in.
+    if (error.code === 401 && (await isSessionActive())) return null
+    throw error
+  }
 }
 
 // The slug, authorId and authorName are never changed on edit.

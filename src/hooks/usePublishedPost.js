@@ -1,31 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { getPublishedPostBySlug } from '../services/postService'
+import { useAsync } from './useAsync'
 
 export function usePublishedPost(slug) {
-  const [result, setResult] = useState({ slug: null, post: null, error: null })
+  const fetchPost = useCallback(() => getPublishedPostBySlug(slug), [slug])
+  const { data, isLoading, error, retry } = useAsync(fetchPost)
 
-  useEffect(() => {
-    let ignore = false
-
-    getPublishedPostBySlug(slug)
-      .then((post) => {
-        if (!ignore) setResult({ slug, post, error: null })
-      })
-      .catch((err) => {
-        console.error(err)
-        if (!ignore) setResult({ slug, post: null, error: 'Could not load this post.' })
-      })
-
-    return () => {
-      ignore = true
-    }
-  }, [slug])
-
-  const isLoading = result.slug !== slug
-
-  return {
-    post: isLoading ? null : result.post,
-    error: isLoading ? null : result.error,
-    isLoading,
-  }
+  // Never show the previous post while a new one loads. null means "not found".
+  return { post: isLoading ? null : data, isLoading, error, retry }
 }

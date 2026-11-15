@@ -13,6 +13,8 @@ import { deletePost, setPostStatus } from '../services/postService'
 import { getPostErrorMessage } from '../utils/postErrors'
 import { useToast } from '../hooks/useToast'
 import { getSaveMessage } from '../utils/postRules'
+import ErrorState from '../components/ui/ErrorState'
+import { useSessionExpiry } from '../hooks/useSessionExpiry'
 
 function Dashboard() {
   const user = useSelector(selectUser)
@@ -21,7 +23,7 @@ function Dashboard() {
   const toast = useToast()
   const [busyId, setBusyId] = useState(null) // the post currently being changed
   const [postToDelete, setPostToDelete] = useState(null)
-
+const handleSessionError = useSessionExpiry()
   const categoryNames = Object.fromEntries(categories.map((c) => [c.slug, c.name]))
 
   async function handleToggleStatus(post) {
@@ -33,7 +35,7 @@ function Dashboard() {
       toast.success(getSaveMessage(post.status, status))
     } catch (err) {
       console.error(err)
-      toast.error(getPostErrorMessage(err))
+      if (!(await handleSessionError(err))) toast.error(getPostErrorMessage(err))
     } finally {
       setBusyId(null)
     }
@@ -48,7 +50,7 @@ function Dashboard() {
       toast.success('Post deleted.')
     } catch (err) {
       console.error(err)
-      toast.error(getPostErrorMessage(err))
+      if (!(await handleSessionError(err))) toast.error(getPostErrorMessage(err))
     } finally {
       setBusyId(null)
       setPostToDelete(null)
@@ -70,11 +72,7 @@ function Dashboard() {
         {isLoading ? (
           <PageLoader />
         ) : error ? (
-          <EmptyState
-            title="Couldn't load your posts"
-            description={error}
-            action={<Button variant="secondary" onClick={reload}>Try again</Button>}
-          />
+           <ErrorState title="Couldn't load your posts" message={error} onRetry={reload} />
         ) : posts.length === 0 ? (
           <EmptyState
             title="You haven't written anything yet"

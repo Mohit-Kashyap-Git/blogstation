@@ -7,5 +7,6 @@ export function getPostErrorMessage(error) {
     413: 'That image is too large. The maximum size is 2 MB.',
     404: 'This post could not be found.',
     409: 'A post with this URL already exists. Please try saving again.',
+    401: 'Your session has expired. Log in again (a new tab keeps your text here), then try saving once more.',
   })
 }
