@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router'
-import { selectUser } from '../features/auth/authSlice'
+import { selectUser, selectIsAdmin } from '../features/auth/authSlice'
 import { useLogout } from '../hooks/useLogout'
 
 function UserMenu() {
   const user = useSelector(selectUser)
+  const isAdmin = useSelector(selectIsAdmin)
   const logout = useLogout()
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
@@ -61,6 +62,11 @@ function UserMenu() {
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
           </div>
           <div className="mt-2 space-y-1">
+            {isAdmin && (
+              <Link to="/admin" onClick={() => setOpen(false)} className={itemClass}>
+                Admin
+              </Link>
+            )}
             <Link to="/profile" onClick={() => setOpen(false)} className={itemClass}>
               Profile
             </Link>

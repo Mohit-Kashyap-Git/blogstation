@@ -13,6 +13,11 @@ import NotFound from '../pages/NotFound'
 import CreatePost from '../pages/CreatePost'
 import EditPost from '../pages/EditPost'
 import Profile from '../pages/Profile'
+import AdminRoute from './AdminRoute'
+import AdminLayout from '../layouts/AdminLayout'
+import AdminOverview from '../pages/admin/AdminOverview'
+import AdminPosts from '../pages/admin/AdminPosts'
+import AdminEditPost from '../pages/admin/AdminEditPost'
 
 function AppRoutes() {
   return (
@@ -27,6 +32,13 @@ function AppRoutes() {
           <Route path="posts/new" element={<CreatePost />} />
           <Route path="posts/:postId/edit" element={<EditPost />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="admin" element={<AdminRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<AdminOverview />} />
+              <Route path="posts" element={<AdminPosts />} />
+              <Route path="posts/:postId/edit" element={<AdminEditPost />} />
+            </Route>
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFound />} />

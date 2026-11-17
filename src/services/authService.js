@@ -1,5 +1,6 @@
 import { ID } from 'appwrite'
 import { account } from '../lib/appwrite'
+import { ADMIN_LABEL } from '../utils/constants'
 
 // Appwrite returns many fields. We keep only what the UI needs.
 function toUser(appwriteUser) {
@@ -8,6 +9,7 @@ function toUser(appwriteUser) {
     name: appwriteUser.name,
     email: appwriteUser.email,
     joinedAt: appwriteUser.$createdAt,
+    isAdmin: appwriteUser.labels?.includes(ADMIN_LABEL) ?? false,
   }
 }
 

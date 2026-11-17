@@ -88,7 +88,7 @@ export async function getOwnPost(postId, userId) {
 
 // The slug, authorId and authorName are never changed on edit.
 // coverFile = a newly chosen image. removeCover = the user cleared the cover.
-export async function updatePost({ post, values, status, userId, coverFile, removeCover }) {
+export async function updatePost({ post, values, status, userId, coverFile, removeCover, keepPermissions = false }) {
   const previousCoverId = post.coverImageId ?? null
   let coverImageId = previousCoverId
   let uploadedId = null
@@ -113,7 +113,9 @@ export async function updatePost({ post, values, status, userId, coverFile, remo
         coverImageId,
         ...getStatusData(post.status, status),
       },
-      permissions: buildPermissions(userId, status),
+      // Omitting `permissions` leaves them unchanged. Admins must do this,
+      // because they can't grant roles they don't hold (e.g. the author's).
+      ...(keepPermissions ? {} : { permissions: buildPermissions(userId, status) }),
     })
 
     // Only after the row is saved is it safe to delete the old file.

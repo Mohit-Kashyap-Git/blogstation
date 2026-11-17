@@ -11,9 +11,10 @@ import { maxLengthRule, postLimits } from '../utils/validation'
 const emptyValues = { title: '', categorySlug: '', excerpt: '', content: '' }
 
 // onSubmit(values, status) where status is 'draft' or 'published'.
-function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, currentStatus = 'draft',  existingCoverUrl = null }) {
+function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, currentStatus = 'draft', existingCoverUrl = null, mode = 'author' }) {
   // Which button was clicked. Publishing has stricter rules than saving a draft.
-  const intentRef = useRef('draft')
+  const isModerator = mode === 'moderator'
+  const intentRef = useRef(isModerator ? currentStatus : 'draft')
   const [cover, setCover] = useState({ file: null, remove: false })
 
   const {
@@ -66,7 +67,7 @@ function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, cu
         ))}
       </Select>
 
-      <CoverImageField existingUrl={existingCoverUrl} onChange={setCover} />
+      {!isModerator && <CoverImageField existingUrl={existingCoverUrl} onChange={setCover} />}
 
       <Textarea
         label="Excerpt"
@@ -93,21 +94,29 @@ function PostForm({ categories, defaultValues = emptyValues, onSubmit, error, cu
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button
-          type="submit"
-          variant="secondary"
-          disabled={isSubmitting}
-          onClick={() => (intentRef.current = 'draft')}
-        >
-          {isSubmitting && intentRef.current === 'draft' ? draftBusyLabel : draftLabel}
-        </Button>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          onClick={() => (intentRef.current = 'published')}
-        >
-          {isSubmitting && intentRef.current === 'published' ? publishBusyLabel : publishLabel}
-        </Button>
+        {isModerator ? (
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : 'Save changes'}
+          </Button>
+        ) : (
+          <>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={isSubmitting}
+              onClick={() => (intentRef.current = 'draft')}
+            >
+              {isSubmitting && intentRef.current === 'draft' ? draftBusyLabel : draftLabel}
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              onClick={() => (intentRef.current = 'published')}
+            >
+              {isSubmitting && intentRef.current === 'published' ? publishBusyLabel : publishLabel}
+            </Button>
+          </>
+        )}
       </div>
     </form>
   )

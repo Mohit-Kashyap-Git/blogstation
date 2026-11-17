@@ -8,5 +8,6 @@ export function getPostErrorMessage(error) {
     404: 'This post could not be found.',
     409: 'A post with this URL already exists. Please try saving again.',
     401: 'Your session has expired. Log in again (a new tab keeps your text here), then try saving once more.',
+    user_unauthorized: "You don't have permission to do that.",
   })
 }

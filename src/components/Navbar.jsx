@@ -5,7 +5,7 @@ import { APP_NAME } from '../utils/constants'
 import {
   selectIsAuthenticated,
   selectIsInitializing,
-  selectUser,
+  selectUser, selectIsAdmin
 } from '../features/auth/authSlice'
 import { useLogout } from '../hooks/useLogout'
 import Button from './ui/Button'
@@ -29,6 +29,7 @@ function Navbar() {
   const user = useSelector(selectUser)
   const isAuthenticated = useSelector(selectIsAuthenticated)
   const isInitializing = useSelector(selectIsInitializing)
+  const isAdmin = useSelector(selectIsAdmin)
   const logout = useLogout()
 
   const closeMenu = () => setMenuOpen(false)
@@ -101,6 +102,11 @@ function Navbar() {
                 <div className="mt-2 border-t border-slate-200 pt-3 dark:border-slate-800">
                   <p className="truncate px-3 text-sm font-semibold">{user.name}</p>
                   <p className="mb-1 truncate px-3 text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                  {isAdmin && (
+                    <NavLink to="/admin" onClick={closeMenu} className={linkClass}>
+                      Admin
+                    </NavLink>
+                  )}
                   <NavLink to="/profile" onClick={closeMenu} className={linkClass}>
                     Profile
                   </NavLink>

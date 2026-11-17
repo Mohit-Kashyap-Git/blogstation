@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router'
 import NameForm from '../components/profile/NameForm'
 import PasswordForm from '../components/profile/PasswordForm'
 import Card from '../components/ui/Card'
@@ -7,18 +6,8 @@ import Container from '../components/ui/Container'
 import { selectUser } from '../features/auth/authSlice'
 import { useMyPostCounts } from '../hooks/useMyPostCounts'
 import { formatDate } from '../utils/formatDate'
+import StatCard from '../components/ui/StatCard'
 
-function Stat({ label, value }) {
-  return (
-    <Link
-      to="/dashboard"
-      className="rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:border-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-500 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-400"
-    >
-      <p className="text-3xl font-bold">{value}</p>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{label}</p>
-    </Link>
-  )
-}
 
 function Profile() {
   const user = useSelector(selectUser)
@@ -45,8 +34,8 @@ function Profile() {
       </header>
 
       <div className="mt-8 grid grid-cols-2 gap-4">
-        <Stat label="Published posts" value={display(counts?.published)} />
-        <Stat label="Drafts" value={display(counts?.draft)} />
+        <StatCard to="/dashboard" label="Published posts" value={display(counts?.published)} />
+        <StatCard to="/dashboard" label="Drafts" value={display(counts?.draft)} />
       </div>
 
       <div className="mt-8 space-y-6">

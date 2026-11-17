@@ -64,6 +64,7 @@ const authSlice = createSlice({
 
 export const { sessionExpired } = authSlice.actions
 export const selectUser = (state) => state.auth.user
+export const selectIsAdmin = (state) => state.auth.user?.isAdmin === true
 export const selectIsAuthenticated = (state) => state.auth.user !== null
 export const selectIsInitializing = (state) => state.auth.isInitializing
 
