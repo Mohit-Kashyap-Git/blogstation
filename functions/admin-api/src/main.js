@@ -108,7 +108,15 @@ export default async ({ req, res, error }) => {
     const tablesDB = new TablesDB(client)
 
     // Authorization: ask Appwrite who the caller is. Never trust the request body for this.
-    const caller = await users.get({ userId: callerId })
+    let caller
+    try {
+      caller = await users.get({ userId: callerId })
+    } catch (err) {
+      // The caller isn't a project user (for example a Console run), so they are not authenticated.
+      if (err?.code === 404) throw new HttpError(401, 'Authentication required.')
+      throw err
+    }
+
     if (!caller.status || !caller.labels.includes(ADMIN_LABEL)) {
       throw new HttpError(403, 'Admin access required.')
     }
