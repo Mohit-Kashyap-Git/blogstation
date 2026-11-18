@@ -21,7 +21,7 @@ function AdminOverview() {
             <StatCard to="/admin/posts" label="Total posts" value={show(stats?.total)} />
             <StatCard to="/admin/posts?status=published" label="Published" value={show(stats?.published)} />
             <StatCard to="/admin/posts?status=draft" label="Drafts (all authors)" value={show(stats?.draft)} />
-            <StatCard label="Categories" value={show(stats?.categories)} />
+            <StatCard to="/admin/categories" label="Categories" value={show(stats?.categories)} />
           </div>
         )}
       </div>

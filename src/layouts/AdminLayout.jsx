@@ -5,6 +5,7 @@ import Container from '../components/ui/Container'
 const adminLinks = [
   { to: '/admin', label: 'Overview', end: true },
   { to: '/admin/posts', label: 'Posts' },
+  { to: '/admin/categories', label: 'Categories' },
 ]
 
 const linkClass = ({ isActive }) =>

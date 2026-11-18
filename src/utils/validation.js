@@ -1,5 +1,6 @@
 const EMAIL_PATTERN = /^\S+@\S+\.\S+$/
 const trim = (value) => value.trim()
+import { slugify } from './slug'
 
 export const maxLengthRule = (max, label) => ({
   value: max,
@@ -36,4 +37,12 @@ export function confirmPasswordRules(getPassword) {
     required: 'Please confirm your password',
     validate: (value) => value === getPassword() || 'Passwords do not match',
   }
+}
+
+// 50 / 60 match the `name` and `slug` column sizes in the Appwrite `categories` table.
+export const categoryNameRules = {
+  setValueAs: trim,
+  required: 'Category name is required',
+  maxLength: maxLengthRule(50, 'Name'),
+  validate: (value) => slugify(value, 60) !== '' || 'Use at least one letter or number (a-z, 0-9)',
 }

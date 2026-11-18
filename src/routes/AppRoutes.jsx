@@ -18,6 +18,7 @@ import AdminLayout from '../layouts/AdminLayout'
 import AdminOverview from '../pages/admin/AdminOverview'
 import AdminPosts from '../pages/admin/AdminPosts'
 import AdminEditPost from '../pages/admin/AdminEditPost'
+import AdminCategories from '../pages/admin/AdminCategories'
 
 function AppRoutes() {
   return (
@@ -37,6 +38,7 @@ function AppRoutes() {
               <Route index element={<AdminOverview />} />
               <Route path="posts" element={<AdminPosts />} />
               <Route path="posts/:postId/edit" element={<AdminEditPost />} />
+              <Route path="categories" element={<AdminCategories />} />
             </Route>
           </Route>
         </Route>

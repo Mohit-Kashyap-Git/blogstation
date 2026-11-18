@@ -1,5 +1,6 @@
-import { Query } from 'appwrite'
+import { ID, Query } from 'appwrite'
 import { appwriteConfig, tablesDB } from '../lib/appwrite'
+import { getCategories } from './categoryService'
 
 const { databaseId, postsTableId, categoriesTableId } = appwriteConfig
 
@@ -53,4 +54,43 @@ export async function getPostForAdmin(postId) {
     if (error.code === 404) return null
     throw error
   }
+}
+
+// Categories plus how many posts (any status, any author) use each one.
+export async function getAdminCategories() {
+  const categories = await getCategories()
+  const counts = await Promise.all(
+    categories.map((category) =>
+      countRows(postsTableId, [Query.equal('categorySlug', category.slug)])
+    )
+  )
+  return categories.map((category, index) => ({ ...category, postCount: counts[index] }))
+}
+
+export function createCategory({ name, slug }) {
+  return tablesDB.createRow({
+    databaseId,
+    tableId: categoriesTableId,
+    rowId: ID.unique(),
+    data: { name, slug },
+  })
+}
+
+// Only the name can change. The slug is what posts refer to, so it stays fixed.
+export function renameCategory(id, name) {
+  return tablesDB.updateRow({
+    databaseId,
+    tableId: categoriesTableId,
+    rowId: id,
+    data: { name },
+  })
+}
+
+export async function deleteCategory(id, slug) {
+  // Re-check right before deleting, because the list on screen may be out of date.
+  const inUse = await countRows(postsTableId, [Query.equal('categorySlug', slug)])
+  if (inUse > 0) {
+    throw Object.assign(new Error('Category is in use'), { type: 'category_in_use' })
+  }
+  return tablesDB.deleteRow({ databaseId, tableId: categoriesTableId, rowId: id })
 }

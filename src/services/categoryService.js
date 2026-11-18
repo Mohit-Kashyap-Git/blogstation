@@ -12,6 +12,6 @@ export async function getCategories() {
 
   // TablesDB returns `rows` (the older Databases API used `documents`).
   return response.rows
-    .map(({ name, slug }) => ({ name, slug }))
-    .sort((a, b) => a.name.localeCompare(b.name))
+  .map(({ $id, name, slug }) => ({ id: $id, name, slug }))
+  .sort((a, b) => a.name.localeCompare(b.name))
 }
